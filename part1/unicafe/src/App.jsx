@@ -9,12 +9,46 @@ const Statistics = (props) => {
   return (
     <div>
       <h1>statistics</h1>
-      <p>good {props.good}</p>
-      <p>neutral {props.neutral}</p>
-      <p>bad {props.bad}</p>
-      <p>all {props.all}</p>
-      <p>average {props.average}</p>
-      <p>positive {props.positiveFeedback} %</p>
+      <table>
+        <tbody>
+          <tr>
+            <td><StatisticLine text="good" value={props.good}/></td>
+          </tr>
+          <tr>
+            <td><StatisticLine text="neutral" value={props.neutral}/></td>
+          </tr>
+          <tr>
+            <td><StatisticLine text="bad" value={props.bad}/></td>
+          </tr>
+          <tr>
+            <td><StatisticLine text="all" value={props.all}/></td>
+          </tr>
+          <tr>
+            <td><StatisticLine text="average" value={props.average}/></td>
+          </tr>
+          <tr>
+            <td><StatisticLine text="positive" value={props.positiveFeedback}/></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+const Button = (props) => {
+  return (
+    <div>
+      <button onClick={props.handleClickGood}>good</button>
+      <button onClick={props.handleClickNeutral}>neutral</button>
+      <button onClick={props.handleClickBad}>bad</button>
+    </div>
+  )
+}
+
+const StatisticLine = (props) => {
+  return (
+    <div>
+      <p>{props.text} {props.value}</p>
     </div>
   )
 }
@@ -39,14 +73,18 @@ const App = () => {
 
   const all = good+neutral+bad;
   const average = ((good*1)+(neutral*0)+(bad*-1))/all;
-  const positiveFeedback = good/all*100;
+  const positiveFeedback = (good/all*100) + ' %';
 
   return (
     <div>
       <h1>give feedback</h1>
-      <button onClick={handleClickGood}>good</button>
-      <button onClick={handleClickNeutral}>neutral</button>
-      <button onClick={handleClickBad}>bad</button>
+
+      <Button
+      handleClickGood={handleClickGood}
+      handleClickNeutral={handleClickNeutral}
+      handleClickBad={handleClickBad}
+      />
+
       <Statistics
         good={good}
         neutral={neutral}
