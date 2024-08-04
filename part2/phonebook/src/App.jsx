@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Filter } from './components/Filter';
 import { PersonForm } from './components/PersonForm';
-import { Person } from './components/Persons';
-import axios from 'axios';
+import { Persons } from './components/Persons';
+import { getAll, create, update} from './services/persons';
 
 const App = () => {
 
@@ -12,8 +12,7 @@ const App = () => {
   const [searchName, setSearchName] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    getAll()
       .then(response => {
         setPersons(response.data)
       })
@@ -25,15 +24,25 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (persons.find(value => value.name.toLocaleLowerCase() === newName.toLocaleLowerCase())) {
-      alert(`${newName} is already added to phonebook`);
+    const isPersonPresent = persons.find(value => value.name.toLocaleLowerCase() === newName.toLocaleLowerCase())
+    if (isPersonPresent) {
+      if (isPersonPresent.number === newTelNumber) {
+        alert(`${newName} is already added to phonebook`);
+      } else {
+          if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+            update({...isPersonPresent, number: newTelNumber});
+        }
+      }
     } else {
       const personObject = {
         name: newName,
         number: newTelNumber,
-        id: persons.length +1
+        id: (persons.length +1).toString()
       }
-      setPersons(persons.concat(personObject));
+      create(personObject)
+        .then(response => {
+          setPersons(previousPersons => [...previousPersons, response.data]);
+        })
     }
     setNewName('');
     setNewTelNumber('');
@@ -58,7 +67,7 @@ const App = () => {
         onNameChange={handleNameChange}
         onTelNumberChange={handleTelNumberChange}/>
       <h2>Numbers</h2>
-      <Person searchName={searchName} persons={persons}/>
+      <Persons searchName={searchName} persons={persons}/>
     </div>
   )
 }
